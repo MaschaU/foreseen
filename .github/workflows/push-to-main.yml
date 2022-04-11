@@ -1,0 +1,55 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+
+name: Merge to main branch
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm ci
+      - run: npm test
+
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - name: Conventional Changelog Action
+      uses: TriPSs/conventional-changelog-action@v3
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        # git-message: 'chore(release): {version}'
+        # git-user-name: 'Awesome Changelog Action'
+        # git-user-email: 'awesome_changelog@github.actions.com'
+        # preset: 'angular'
+        # tag-prefix: 'v'
+        # output-file: 'MY_CUSTOM_CHANGELOG.md'
+        # release-count: '10'
+        # version-file: './my_custom_version_file.json' # or .yml, .yaml, .toml
+        # version-path: 'path.to.version'
+        # skip-on-empty: 'false'
+        # skip-version-file: 'false'
+        # skip-commit: 'false'
+    # - uses: ncipollo/release-action@v1
+    #   with:
+    #     # artifacts: "release.tar.gz,foo/*.txt"
+    #     # bodyFile: "body.md"
+    #     token: ${{ secrets.GITHUB_TOKEN }}
