@@ -26,5 +26,5 @@ export const analyze = (str: string): Sc => {
       functionName,
       ...subExpressions.map(s => analyze(s))
     ];
-  }) : []);
+  });
 };

@@ -74,7 +74,7 @@ const fixtures = {
   ]
 };
 
-function getFixtureByIndex(index:number) {
+function getFixtureByIndex(index: number) {
   return Object.keys(fixtures).map((str) => [str, fixtures[str][index]]);
 }
 
